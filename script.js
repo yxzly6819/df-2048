@@ -1,10 +1,10 @@
 // ==========================================
 // 💡 在这里自定义不同的句子！每个数组代表一句话。
 // 游戏开始时会随机从这些句子里抽取词语生成方块，
-// 只有相邻语序的词语发生碰撞，且合并顺序正确时才能成功合并。
+// 只有相邻语序的词语发生碰撞时才能成功合并（不限制左右顺序）。
 // ==========================================
 const SENTENCES = [
-    ["娃娃们啊", "再这样下去", "你的德语", "就完蛋了"], // 句子 1，合成路线：我+爱=我爱，我爱+写=我爱写...
+    ["娃娃们啊", "再这样下去", "你的德语", "就完蛋了"], // 句子 1
     ["你们有个", "学长"], // 句子 2
     ["没做作业的", "自己", "站起来"], // 句子 3
     //["你们", "摸着", "良心", "说说"],
@@ -140,39 +140,22 @@ function addRandomTile() {
 }
 
 // 核心逻辑：判断两个方块是否可以合并
-// isReversed: true 表示滑动方向是从右到左/从下到上的数据数组(物理上 fixed 在后，moving 在前)
-function canMerge(fixed, moving, isReversed) {
+function canMerge(fixed, moving) {
     if (!fixed || !moving) return false;
     // 两个方片不是同一句话的，不能合并
     if (fixed.sentenceIdx !== moving.sentenceIdx) return false;
-    
-    // 如果向左/上滑（isReversed 为 false）：物理上 fixed 在左/上，moving 在右/下
-    // 必须是 fixed 的结尾接着 moving 的开头
-    if (!isReversed) {
-        return fixed.endIdx + 1 === moving.startIdx;
-    } 
-    // 如果向右/下滑（isReversed 为 true）：物理上 fixed 在右/下，moving 在左/上
-    // 必须是 moving 的结尾接着 fixed 的开头
-    else {
-        return moving.endIdx + 1 === fixed.startIdx;
-    }
+
+    // 同一句里只要两段相邻（不论左右顺序）即可合并
+    return fixed.endIdx + 1 === moving.startIdx || moving.endIdx + 1 === fixed.startIdx;
 }
 
 // 合并两个方块，并返回合并后的新方块
-function getMergedTile(fixed, moving, isReversed) {
-    if (!isReversed) {
-        return {
-            sentenceIdx: fixed.sentenceIdx,
-            startIdx: fixed.startIdx,
-            endIdx: moving.endIdx
-        };
-    } else {
-        return {
-            sentenceIdx: fixed.sentenceIdx,
-            startIdx: moving.startIdx,
-            endIdx: fixed.endIdx
-        };
-    }
+function getMergedTile(fixed, moving) {
+    return {
+        sentenceIdx: fixed.sentenceIdx,
+        startIdx: Math.min(fixed.startIdx, moving.startIdx),
+        endIdx: Math.max(fixed.endIdx, moving.endIdx)
+    };
 }
 
 // 单行/单列滑动逻辑
@@ -182,9 +165,9 @@ function slide(row, isReversed = false) {
     
     // 2. 依次检查相邻元素能否合并
     for (let i = 0; i < filteredRow.length - 1; i++) {
-        // 向左/上滑动时，i 对应位置是接收撞击的一侧 (fixed)，i+1 是撞过来的一侧 (moving)
-        if (canMerge(filteredRow[i], filteredRow[i+1], isReversed)) {
-            filteredRow[i] = getMergedTile(filteredRow[i], filteredRow[i+1], isReversed);
+        // filteredRow 中相邻两个方块如果可拼接就合并（不区分方向）
+        if (canMerge(filteredRow[i], filteredRow[i+1])) {
+            filteredRow[i] = getMergedTile(filteredRow[i], filteredRow[i+1]);
             let currentLen = (filteredRow[i].endIdx - filteredRow[i].startIdx) + 1;
             score += currentLen * 20; // 成功拼接一次加分
             filteredRow.splice(i + 1, 1);
@@ -266,8 +249,8 @@ function checkGameOver() {
     }
     for (let r = 0; r < gridSize; r++) {
         for (let c = 0; c < gridSize; c++) {
-            if (c < gridSize - 1 && canMerge(board[r][c], board[r][c+1], false)) return false;
-            if (r < gridSize - 1 && canMerge(board[r][c], board[r+1][c], false)) return false;
+            if (c < gridSize - 1 && canMerge(board[r][c], board[r][c+1])) return false;
+            if (r < gridSize - 1 && canMerge(board[r][c], board[r+1][c])) return false;
         }
     }
     return true;
