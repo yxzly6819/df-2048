@@ -78,9 +78,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 35px;
+    font-size: 22px; /* 减小字号以适应更多文字 */
     font-weight: bold;
     color: #f9f6f2; /* 默认白字 */
+    text-align: center;
+    padding: 5px;
+    box-sizing: border-box;
+    word-break: break-word; /* 允许单词内部换行 */
 }
 
 /* 游戏结束图层 */
