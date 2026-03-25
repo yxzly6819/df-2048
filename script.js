@@ -16,8 +16,38 @@ const SENTENCES = [
 let board = [];
 let score = 0;
 const gridSize = 4;
+let activeSentences = [];
+let isPaused = false; // 用于控制在显示结算画面时暂停输入
+
+// 获取一个随机新句子（排除在场上的句子和空句子）
+function getNewRandomSentence() {
+    let validIndices = [];
+    for (let i = 0; i < SENTENCES.length; i++) {
+        if (SENTENCES[i].length > 0 && !activeSentences.includes(i)) {
+            validIndices.push(i);
+        }
+    }
+    if (validIndices.length === 0) {
+        // 如果句库不够用了，允许重复
+        for (let i = 0; i < SENTENCES.length; i++) {
+            if (SENTENCES[i].length > 0) validIndices.push(i);
+        }
+    }
+    return validIndices[Math.floor(Math.random() * validIndices.length)];
+}
 
 function initGame() {
+    activeSentences = [];
+    while (activeSentences.length < 3) {
+        let newIdx = getNewRandomSentence();
+        if (!activeSentences.includes(newIdx)) {
+            activeSentences.push(newIdx);
+        } else {
+            // 如果所有不同句子不够3个，就允许重复加入
+            activeSentences.push(newIdx);
+        }
+    }
+    
     const grid = document.getElementById('grid');
     grid.innerHTML = '';
     board = [];
@@ -97,7 +127,7 @@ function addRandomTile() {
     if (emptyCells.length > 0) {
         let randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
         
-        let sIdx = Math.floor(Math.random() * SENTENCES.length);
+        let sIdx = activeSentences[Math.floor(Math.random() * activeSentences.length)];
         let wIdx = Math.floor(Math.random() * SENTENCES[sIdx].length);
         
         // 存储当前方块：它属于哪个句子，并且它现在包含了这个句子的第几个字到第几个字
@@ -243,7 +273,56 @@ function checkGameOver() {
     return true;
 }
 
+function checkCompletedSentences() {
+    let completedText = [];
+    
+    for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+            let tile = board[r][c];
+            if (tile !== null) {
+                let sLen = SENTENCES[tile.sentenceIdx].length;
+                if (tile.startIdx === 0 && tile.endIdx === sLen - 1) {
+                    // 完成了一个句子！
+                    let text = SENTENCES[tile.sentenceIdx].join('');
+                    completedText.push(text);
+                    
+                    // 加大分
+                    score += sLen * 100;
+                    
+                    // 从棋盘移除该方块，腾出空间
+                    board[r][c] = null;
+                    
+                    // 替换活跃列表中的这个句子，引入新句子
+                    let listIndex = activeSentences.indexOf(tile.sentenceIdx);
+                    if (listIndex !== -1) {
+                        activeSentences.splice(listIndex, 1);
+                        let newIdx = getNewRandomSentence();
+                        activeSentences.push(newIdx);
+                    }
+                }
+            }
+        }
+    }
+    
+    if (completedText.length > 0) {
+        document.getElementById('completed-sentence').innerHTML = completedText.join('<br><br>');
+        document.getElementById('sentence-message').style.display = 'flex';
+        isPaused = true;
+        return true; // 发现结算
+    }
+    return false;
+}
+
+function continueGame() {
+    document.getElementById('sentence-message').style.display = 'none';
+    isPaused = false;
+    updateBoard();
+    updateScore();
+}
+
 window.addEventListener('keydown', (e) => {
+    if (isPaused) return; // 暂停时不处理按键
+    
     let moved = false;
     
     if (['ArrowLeft', 'a', 'A'].includes(e.key)) moved = moveLeft();
@@ -252,16 +331,21 @@ window.addEventListener('keydown', (e) => {
     else if (['ArrowDown', 's', 'S'].includes(e.key)) moved = moveDown();
 
     if (moved) {
+        // 先检查是否有合成完成的句子！
+        checkCompletedSentences();
+        
         addRandomTile();
         updateBoard();
         updateScore();
-        if (checkGameOver()) {
+        if (!isPaused && checkGameOver()) {
             document.getElementById('game-message').style.display = 'flex';
+            isPaused = true;
         }
     }
 });
 
 function resetGame() {
+    isPaused = false;
     initGame();
 }
 
