@@ -1,0 +1,140 @@
+:root {
+    --text-color: #776e65;
+    --bg-color: #faf8ef;
+    --grid-bg: #bbada0;
+    --cell-empty: #cdc1b4;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 500px;
+    margin-top: 40px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 50px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.score-box {
+    background: var(--grid-bg);
+    padding: 10px 25px;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px;
+}
+
+#score {
+    font-size: 24px;
+}
+
+.game-intro {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.game-container {
+    position: relative;
+    background: var(--grid-bg);
+    padding: 15px;
+    border-radius: 6px;
+    width: 470px;
+    height: 470px;
+    box-sizing: border-box;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 15px;
+    width: 100%;
+    height: 100%;
+}
+
+.grid-cell {
+    background: var(--cell-empty);
+    border-radius: 3px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 35px;
+    font-weight: bold;
+    color: #f9f6f2; /* 默认白字 */
+}
+
+/* 游戏结束图层 */
+.game-message {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(238, 228, 218, 0.73);
+    z-index: 100;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 6px;
+}
+
+.game-message p {
+    font-size: 60px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.retry-button {
+    background: #8f7a66;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.retry-button:hover {
+    background: #9f8b77;
+}
+
+.custom-tip {
+    margin-top: 30px;
+    font-size: 14px;
+    color: #999;
+}
+
+/* 不同等级方块的颜色和字号（基于经典 2048 配色） */
+.level-1 { background: #eee4da; color: #776e65; font-size: 45px; } /* 相当于 2 */
+.level-2 { background: #ede0c8; color: #776e65; font-size: 45px; } /* 相当于 4 */
+.level-3 { background: #f2b179; font-size: 40px; } /* 相当于 8 */
+.level-4 { background: #f59563; font-size: 36px; } /* 相当于 16 */
+.level-5 { background: #f67c5f; font-size: 32px; } /* 相当于 32 */
+.level-6 { background: #f65e3b; font-size: 28px; } /* 相当于 64 */
+.level-7 { background: #edcf72; font-size: 24px; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.2381), inset 0 0 0 1px rgba(255, 255, 255, 0.142857); } /* 相当于 128 */
+.level-8 { background: #edcc61; font-size: 20px; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.31746), inset 0 0 0 1px rgba(255, 255, 255, 0.190476); } /* 相当于 256 */
+.level-9 { background: #edc850; font-size: 18px; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.39683), inset 0 0 0 1px rgba(255, 255, 255, 0.238095); } /* 相当于 512 */
+.level-10 { background: #edc53f; font-size: 16px; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.47619), inset 0 0 0 1px rgba(255, 255, 255, 0.285714); } /* 相当于 1024 */
+.level-11 { background: #edc22e; font-size: 14px; box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556), inset 0 0 0 1px rgba(255, 255, 255, 0.333333); } /* 相当于 2048 */

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自定义词语 2048</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">句子 2048</h1>
+            <div class="scores-container">
+                <div class="score-box">得分<br><span id="score">0</span></div>
+            </div>
+        </div>
+        <div class="game-intro">
+            <p>使用 <strong>方向键</strong> 或者 <strong>W A S D</strong> 移动方块。相同的词语相撞时会 <strong>合成更长的句子！</strong></p>
+        </div>
+        
+        <div class="game-container">
+            <div class="game-message" id="game-message">
+                <p>游戏结束!</p>
+                <div class="lower">
+                    <button class="retry-button" onclick="resetGame()">再来一局</button>
+                </div>
+            </div>
+            
+            <div class="grid-container" id="grid">
+                <!-- 16个格子将在 JS 中动态生成 -->
+            </div>
+        </div>
+        
+        <p class="custom-tip">💡 提示：你可以打开 script.js 文件，在顶部的 <code>WORDS</code> 数组中自定义你的专属词语演化路线！</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
