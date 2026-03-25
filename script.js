@@ -9,8 +9,8 @@ const SENTENCES = [
     ["没做作业的", "自己", "站起来"], // 句子 3
     ["你们", "摸着", "良心", "说说"],
     ["你们的", "良心", "已经", "大大的", "坏掉了"],
-    ["飞", "乐", "然"] ,
-    []
+    ["飞", "乐", "然"] 
+    
 ];
 
 let board = [];
@@ -67,6 +67,19 @@ function updateBoard() {
                     text += SENTENCES[tile.sentenceIdx][i];
                 }
                 cell.innerText = text;
+                
+                // 根据文字长度动态调整字号，避免超出方块
+                if (text.length <= 4) {
+                    cell.style.fontSize = '30px';
+                } else if (text.length <= 8) {
+                    cell.style.fontSize = '22px';
+                } else if (text.length <= 12) {
+                    cell.style.fontSize = '18px';
+                } else {
+                    cell.style.fontSize = '14px';
+                }
+            } else {
+                cell.style.fontSize = ''; // 清空空方块的字号设置
             }
         }
     }
