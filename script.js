@@ -38,7 +38,7 @@ function getNewRandomSentence() {
 
 function initGame() {
     activeSentences = [];
-    while (activeSentences.length < 3) {
+    while (activeSentences.length < 2) {
         let newIdx = getNewRandomSentence();
         if (!activeSentences.includes(newIdx)) {
             activeSentences.push(newIdx);
