@@ -344,6 +344,62 @@ window.addEventListener('keydown', (e) => {
     }
 });
 
+// ==== 移动端触屏滑动支持 ====
+let touchStartX = 0;
+let touchStartY = 0;
+
+// 在棋盘区域监听触摸事件
+document.addEventListener('DOMContentLoaded', () => {
+    const gameContainer = document.querySelector('.game-container');
+    
+    gameContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: false });
+
+    // 防止在棋盘上滑动时页面跟着滚动
+    gameContainer.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+
+    gameContainer.addEventListener('touchend', (e) => {
+        if (isPaused) return;
+
+        let touchEndX = e.changedTouches[0].screenX;
+        let touchEndY = e.changedTouches[0].screenY;
+        
+        let diffX = touchEndX - touchStartX;
+        let diffY = touchEndY - touchStartY;
+        
+        // 设一个滑动阈值，避免误触（比如至少滑动 30px 才算数）
+        if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
+
+        let moved = false;
+        
+        // 判断滑动方向
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            // 水平滑动
+            if (diffX > 0) moved = moveRight();
+            else moved = moveLeft();
+        } else {
+            // 垂直滑动
+            if (diffY > 0) moved = moveDown();
+            else moved = moveUp();
+        }
+
+        if (moved) {
+            checkCompletedSentences();
+            addRandomTile();
+            updateBoard();
+            updateScore();
+            if (!isPaused && checkGameOver()) {
+                document.getElementById('game-message').style.display = 'flex';
+                isPaused = true;
+            }
+        }
+    });
+});
+
 function resetGame() {
     isPaused = false;
     initGame();
