@@ -26,7 +26,8 @@ let completedSentenceCount = 0;
 function loadCompletedSentenceCount() {
     try {
         const raw = localStorage.getItem(ACHIEVEMENT_STORAGE_KEY);
-        const parsed = Number.parseInt(raw, 10);
+        if (!raw) return 0;
+        const parsed = parseInt(raw, 10);
         return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
     } catch (e) {
         return 0;
@@ -42,7 +43,9 @@ function saveCompletedSentenceCount() {
 }
 
 function updateAchievementCount() {
-    document.getElementById('achievement-count').innerText = completedSentenceCount;
+    const achievementCountEl = document.getElementById('achievement-count');
+    if (!achievementCountEl) return;
+    achievementCountEl.textContent = String(completedSentenceCount);
 }
 
 // 获取一个随机新句子（排除在场上的句子和空句子）
