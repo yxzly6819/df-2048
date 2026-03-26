@@ -20,6 +20,33 @@ let score = 0;
 const gridSize = 4;
 let activeSentences = [];
 let isPaused = false; // 用于控制在显示结算画面时暂停输入
+const ACHIEVEMENT_STORAGE_KEY = 'df2048_completed_sentence_count';
+let completedSentenceCount = 0;
+
+function loadCompletedSentenceCount() {
+    try {
+        const raw = localStorage.getItem(ACHIEVEMENT_STORAGE_KEY);
+        if (!raw) return 0;
+        const parsed = parseInt(raw, 10);
+        return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
+    } catch (e) {
+        return 0;
+    }
+}
+
+function saveCompletedSentenceCount() {
+    try {
+        localStorage.setItem(ACHIEVEMENT_STORAGE_KEY, String(completedSentenceCount));
+    } catch (e) {
+        // 忽略存储失败（例如隐私模式禁用 localStorage）
+    }
+}
+
+function updateAchievementCount() {
+    const achievementCountEl = document.getElementById('achievement-count');
+    if (!achievementCountEl) return;
+    achievementCountEl.textContent = String(completedSentenceCount);
+}
 
 // 获取一个随机新句子（排除在场上的句子和空句子）
 function getNewRandomSentence() {
@@ -39,6 +66,9 @@ function getNewRandomSentence() {
 }
 
 function initGame() {
+    completedSentenceCount = loadCompletedSentenceCount();
+    updateAchievementCount();
+
     activeSentences = [];
     while (activeSentences.length < 2) {
         let newIdx = getNewRandomSentence();
@@ -290,6 +320,10 @@ function checkCompletedSentences() {
     }
     
     if (completedText.length > 0) {
+        completedSentenceCount += completedText.length;
+        saveCompletedSentenceCount();
+        updateAchievementCount();
+
         document.getElementById('completed-sentence').innerHTML = completedText.join('<br><br>');
         document.getElementById('sentence-message').style.display = 'flex';
         isPaused = true;

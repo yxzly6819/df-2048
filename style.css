@@ -33,6 +33,11 @@ body {
     margin: 0;
 }
 
+.scores-container {
+    display: flex;
+    gap: 10px;
+}
+
 .score-box {
     background: var(--grid-bg);
     padding: 10px 25px;
